@@ -37,7 +37,7 @@ prepare_data <- function(){
   final_data <- merge(final_csv,impfugen_sum, by.x = "csv.Datum" ,by.y = "impfung.Impfdatum")
   
   final_final_data <- data.frame(final_data$csv.X7T_Hospitalisierung_Faelle, final_data$csv.X7T_Hospitalisierung_Inzidenz,final_data$impfung.Anzahl)
-  
+  return(final_final_data)
 }
 
 plote_korrelationsmatrix <- function() {
@@ -55,6 +55,6 @@ plote_korrelationsmatrix <- function() {
 }
 
 extrem_wert_analyse()
-prepare_data()
-#plote_korrelationsmatrix()
+final_final_data <- prepare_data()
+plote_korrelationsmatrix()
 
