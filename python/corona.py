@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 
 def main():
     '''main function calling the other functions'''
-
     max_hospitalized()
+    correlation_matrix()
 
 
 def max_hospitalized():
@@ -45,6 +45,30 @@ def max_hospitalized():
     # cdf = mpl.dates.ConciseDateFormatter(ax.xaxis.get_major_locator())
     # ax.xaxis.set_major_formatter(cdf)
 
+    plt.show()
+
+
+def correlation_matrix():
+    '''correlation matrix for all data'''
+    impf_df = pd.read_csv(definitions.FILE_IMPFUNGEN_LAENDER, usecols=[
+                          'Impfdatum', 'Anzahl'])
+    impf_df = impf_df.groupby('Impfdatum').sum()
+    print('IMPF', impf_df.head())
+
+    hosp_df = pd.read_csv(definitions.FILE_HOSPITALISIERUNG, usecols=[
+                          'Datum', 'Altersgruppe', '7T_Hospitalisierung_Faelle', '7T_Hospitalisierung_Inzidenz', 'Bundesland_Id'])
+
+    hosp_df = hosp_df[hosp_df['Altersgruppe'] == '00+']
+    hosp_df = hosp_df[hosp_df['Bundesland_Id'] == 0]
+    hosp_df = hosp_df.drop('Bundesland_Id', axis=1)
+    print('HOSP', hosp_df.head())
+
+    result = pd.concat([impf_df, hosp_df], axis=1).round(2)
+    result = result[result.columns[::-1]]
+    result = result.iloc[::-1]
+    print(result.corr())
+
+    plt.matshow(result.corr())
     plt.show()
 
 
