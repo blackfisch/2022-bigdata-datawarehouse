@@ -3,8 +3,11 @@
 import definitions
 import pandas as pd
 import matplotlib.pyplot as plt
+import timeit
+from statistics import mean
 
 
+hosp = """
 def max_hospitalized():
     '''min-max analysis and visualization of hospitalization data'''
 
@@ -39,13 +42,14 @@ def max_hospitalized():
     axes.set_ylabel('Inzidenz (7 Tage)')
     axes.set_title('Inzidenz (7 Tage) in Deutschland')
     axes.tick_params(axis='x', labelrotation=45)
+"""
 
-
+correlation = """
 def correlation_matrix():
     '''correlation matrix for all data'''
     impf_data = impf_df[['Impfdatum', 'Anzahl']]
     impf_data = impf_data.groupby('Impfdatum').sum()
-    print('IMPF', impf_data.head())
+    #print('IMPF', impf_data.head())
 
     hosp_data = hosp_df[['Datum', 'Altersgruppe', '7T_Hospitalisierung_Faelle',
                          '7T_Hospitalisierung_Inzidenz', 'Bundesland_Id']]
@@ -53,12 +57,12 @@ def correlation_matrix():
     hosp_data = hosp_data[hosp_data['Altersgruppe'] == '00+']
     hosp_data = hosp_data[hosp_data['Bundesland_Id'] == 0]
     hosp_data = hosp_data.drop('Bundesland_Id', axis=1)
-    print('HOSP', hosp_data.head())
+    #print('HOSP', hosp_data.head())
 
     result = pd.concat([impf_data, hosp_data], axis=1).round(2)
     result = result[result.columns[::-1]]
     result = result.iloc[::-1]
-    print(result.corr())
+    #print(result.corr())
 
     _, axes = plt.subplots()
     im = axes.matshow(result.corr())
@@ -69,14 +73,18 @@ def correlation_matrix():
         ['number']).columns)
 
     cb = plt.colorbar(im, ax=axes)
-
+"""
 
 if __name__ == "__main__":
     hosp_df = pd.read_csv(definitions.FILE_HOSPITALISIERUNG)
     impf_df = pd.read_csv(definitions.FILE_IMPFUNGEN_LAENDER)
     inzidenz_df = pd.read_csv(definitions.FILE_INZIDENZ_BUND)
 
-    max_hospitalized()
-    correlation_matrix()
+    REPEATS = 25
 
-    plt.show()
+    print(f'Mean Execution time over {REPEATS} runs:')
+    print('Exec Time HOSP ', mean(timeit.repeat(hosp, repeat=REPEATS)), ' seconds')
+    print('Exec Time CORR ', mean(timeit.repeat(
+        correlation, repeat=REPEATS)), ' seconds')
+
+    # plt.show()
