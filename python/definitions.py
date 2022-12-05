@@ -33,3 +33,18 @@ FILE_INFEKTIONEN = path.join(
     _DATAPATH,
     'Aktuell_Deutschland_SarsCov2_Infektionen'
 )
+
+FILE_INZIDENZ_LAENDER = path.join(
+    _DATAPATH,
+    'COVID-19-Faelle_7-Tage-Inzidenz_Bundeslaender.csv'
+)
+
+FILE_INZIDENZ_BUND = path.join(
+    _DATAPATH,
+    'COVID-19-Faelle_7-Tage-Inzidenz_Deutschland.csv'
+)
+
+FILE_INZIDENZ_KREISE = path.join(
+    _DATAPATH,
+    'COVID-19-Faelle_7-Tage-Inzidenz_Landkreise.csv'
+)
