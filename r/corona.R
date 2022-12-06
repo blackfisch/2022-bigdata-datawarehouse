@@ -1,6 +1,6 @@
-hosp_data <- read.csv("../data/Aktuell_Deutschland_COVID-19-Hospitalisierungen.csv")
-impf_df <- read.csv("../data/Aktuell_Deutschland_Bundeslaender_COVID-19-Impfungen.csv")
-inzidenz_df <- read.csv("../data/COVID-19-Faelle_7-Tage-Inzidenz_Deutschland.csv")
+hosp_data <- read.csv("data/Aktuell_Deutschland_COVID-19-Hospitalisierungen.csv")
+impf_df <- read.csv("data/Aktuell_Deutschland_Bundeslaender_COVID-19-Impfungen.csv")
+inzidenz_df <- read.csv("data/COVID-19-Faelle_7-Tage-Inzidenz_Deutschland.csv")
 final_data <- 0
 
 install_needed_package <- function() {
@@ -87,58 +87,5 @@ plote_korrelationsmatrix <- function() {
 
 
 system.time(extrem_wert_analyse())
-#system.time(data_corona <- prepare_data())
 system.time(plote_korrelationsmatrix())
 
-
-#old stuff
-# plots <- function() {
-# plot(as.Date(final_data$csv.Datum),final_data$csv.X7T_Hospitalisierung_Faelle, type = "l", lty = 1, lwd = 1)
-# 
-# plot(as.Date(xyz2$inzidenz_df.Meldedatum),xyz2$inzidenz_df.Inzidenz_7.Tage, type = "l", lty = 1, lwd = 1)
-# }
-
-# prepare_data <- function() {
-#   library(dplyr)
-#   
-#   impfugen_reduzed <- data.frame(impfung$Impfdatum, impfung$Anzahl)
-#   
-#   impfugen_sum <- impfugen_reduzed %>%
-#     group_by_if(is.numeric %>%
-#                   Negate()) %>%
-#     summarize_all(sum)
-#   
-#   
-#   csv_only_number <- data.frame(
-#     csv$Datum,
-#     csv$Altersgruppe,
-#     csv$X7T_Hospitalisierung_Faelle,
-#     csv$X7T_Hospitalisierung_Inzidenz,
-#     csv$Bundesland_Id
-#   )
-#   
-#   xyz <- filter(
-#     csv_only_number,
-#     grepl("00\\+", csv_only_number$csv.Altersgruppe)
-#   )
-#   
-#   final_csv <- xyz %>% filter(xyz$csv.Bundesland_Id == 0)
-#   
-#   library(data.table)
-#   setDT(final_csv)
-#   setDT(impfugen_sum)
-#   
-#   final_data <<- merge(
-#     final_csv,
-#     impfugen_sum,
-#     by.x = "csv.Datum",
-#     by.y = "impfung.Impfdatum"
-#   )
-#   
-#   final_final_data <- data.frame(
-#     final_data$csv.X7T_Hospitalisierung_Faelle,
-#     final_data$csv.X7T_Hospitalisierung_Inzidenz,
-#     final_data$impfung.Anzahl
-#   )
-#   return(final_final_data)
-# }
