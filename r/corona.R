@@ -1,5 +1,6 @@
-csv <- read.csv("data/Aktuell_Deutschland_COVID-19-Hospitalisierungen.csv")
-csv_impfung <- read.csv("data/Aktuell_Deutschland_Impfquoten_COVID-19.csv")
+hosp_data <- read.csv("../data/Aktuell_Deutschland_COVID-19-Hospitalisierungen.csv")
+impf_df <- read.csv("../data/Aktuell_Deutschland_Bundeslaender_COVID-19-Impfungen.csv")
+inzidenz_df <- read.csv("../data/COVID-19-Faelle_7-Tage-Inzidenz_Deutschland.csv")
 final_data <- 0
 
 install_needed_package <- function() {
@@ -8,19 +9,39 @@ install_needed_package <- function() {
 }
 
 extrem_wert_analyse <- function() {
-  print(max(csv$X7T_Hospitalisierung_Faelle))
-  print(min(csv$X7T_Hospitalisierung_Faelle))
-}
+  
+   hosp_data <- filter(
+    hosp_data,
+    grepl("00\\+", hosp_data$Altersgruppe)
+  )
+  
+  print(max(hosp_data$X7T_Hospitalisierung_Faelle))
+  print(min(hosp_data$X7T_Hospitalisierung_Faelle))
 
-prepare_data <- function() {
-  print("test")
-  library(dplyr)
 
-  impfung <- read.csv(
-    "data/Aktuell_Deutschland_Bundeslaender_COVID-19-Impfungen.csv"
+  plot(as.Date(hosp_data$Datum),hosp_data$X7T_Hospitalisierung_Faelle, type = "l", lty = 1, lwd = 1)
+
+
+  csv_only_number_inzidenz <- data.frame(
+    inzidenz_df$Meldedatum,
+    inzidenz_df$Altersgruppe,
+    inzidenz_df$Inzidenz_7.Tage
   )
 
-  impfugen_reduzed <- data.frame(impfung$Impfdatum, impfung$Anzahl)
+   xyz2 <<- filter(
+    csv_only_number_inzidenz,
+    grepl("00\\+", csv_only_number_inzidenz$inzidenz_df.Altersgruppe)
+  )
+
+  plot(as.Date(xyz2$inzidenz_df.Meldedatum),xyz2$inzidenz_df.Inzidenz_7.Tage, type = "l", lty = 1, lwd = 1)
+}
+
+plote_korrelationsmatrix <- function() {
+  library(corrplot)
+  library(magrittr)
+  library(dplyr)
+
+  impfugen_reduzed <- data.frame(impf_df$Impfdatum, impf_df$Anzahl)
 
   impfugen_sum <- impfugen_reduzed %>%
     group_by_if(is.numeric %>%
@@ -29,19 +50,19 @@ prepare_data <- function() {
 
 
   csv_only_number <- data.frame(
-    csv$Datum,
-    csv$Altersgruppe,
-    csv$X7T_Hospitalisierung_Faelle,
-    csv$X7T_Hospitalisierung_Inzidenz,
-    csv$Bundesland_Id
+    hosp_data$Datum,
+    hosp_data$Altersgruppe,
+    hosp_data$X7T_Hospitalisierung_Faelle,
+    hosp_data$X7T_Hospitalisierung_Inzidenz,
+    hosp_data$Bundesland_Id
   )
-
+  
   xyz <- filter(
     csv_only_number,
-    grepl("00\\+", csv_only_number$csv.Altersgruppe)
+    grepl("00\\+", csv_only_number$hosp_data.Altersgruppe)
   )
 
-  final_csv <- xyz %>% filter(xyz$csv.Bundesland_Id == 0)
+  final_csv <- xyz %>% filter(xyz$hosp_data.Bundesland_Id == 0)
 
   library(data.table)
   setDT(final_csv)
@@ -50,39 +71,74 @@ prepare_data <- function() {
   final_data <<- merge(
     final_csv,
     impfugen_sum,
-    by.x = "csv.Datum",
-    by.y = "impfung.Impfdatum"
+    by.x = "hosp_data.Datum",
+    by.y = "impf_df.Impfdatum"
   )
 
-  final_final_data <- data.frame(
-    final_data$csv.X7T_Hospitalisierung_Faelle,
-    final_data$csv.X7T_Hospitalisierung_Inzidenz,
-    final_data$impfung.Anzahl
+  data_corona <- data.frame(
+    final_data$hosp_data.X7T_Hospitalisierung_Faelle,
+    final_data$hosp_data.X7T_Hospitalisierung_Inzidenz,
+    final_data$impf_df.Anzahl
   )
-  return(final_final_data)
-}
-
-
-
-plote_korrelationsmatrix <- function() {
-  library(corrplot)
-  library(magrittr)
-  library(dplyr)
 
   m <- cor(data_corona)
   corrplot(m, method = "color")
 }
 
-prediction <- function() {
-  fit <- lm(
-    csv.X7T_Hospitalisierung_Faelle ~ as.Date(c(csv.Datum)),
-    data = final_data
-  )
-  new_data <- data.frame(csv.Datum = as.Date(c("2022-11-1", "2022-11-30")))
-  predict(fit, new_data, interval = "confidence")
-}
 
-extrem_wert_analyse()
-data_corona <- prepare_data()
-plote_korrelationsmatrix()
-prediction()
+system.time(extrem_wert_analyse())
+#system.time(data_corona <- prepare_data())
+system.time(plote_korrelationsmatrix())
+
+
+#old stuff
+# plots <- function() {
+# plot(as.Date(final_data$csv.Datum),final_data$csv.X7T_Hospitalisierung_Faelle, type = "l", lty = 1, lwd = 1)
+# 
+# plot(as.Date(xyz2$inzidenz_df.Meldedatum),xyz2$inzidenz_df.Inzidenz_7.Tage, type = "l", lty = 1, lwd = 1)
+# }
+
+# prepare_data <- function() {
+#   library(dplyr)
+#   
+#   impfugen_reduzed <- data.frame(impfung$Impfdatum, impfung$Anzahl)
+#   
+#   impfugen_sum <- impfugen_reduzed %>%
+#     group_by_if(is.numeric %>%
+#                   Negate()) %>%
+#     summarize_all(sum)
+#   
+#   
+#   csv_only_number <- data.frame(
+#     csv$Datum,
+#     csv$Altersgruppe,
+#     csv$X7T_Hospitalisierung_Faelle,
+#     csv$X7T_Hospitalisierung_Inzidenz,
+#     csv$Bundesland_Id
+#   )
+#   
+#   xyz <- filter(
+#     csv_only_number,
+#     grepl("00\\+", csv_only_number$csv.Altersgruppe)
+#   )
+#   
+#   final_csv <- xyz %>% filter(xyz$csv.Bundesland_Id == 0)
+#   
+#   library(data.table)
+#   setDT(final_csv)
+#   setDT(impfugen_sum)
+#   
+#   final_data <<- merge(
+#     final_csv,
+#     impfugen_sum,
+#     by.x = "csv.Datum",
+#     by.y = "impfung.Impfdatum"
+#   )
+#   
+#   final_final_data <- data.frame(
+#     final_data$csv.X7T_Hospitalisierung_Faelle,
+#     final_data$csv.X7T_Hospitalisierung_Inzidenz,
+#     final_data$impfung.Anzahl
+#   )
+#   return(final_final_data)
+# }
