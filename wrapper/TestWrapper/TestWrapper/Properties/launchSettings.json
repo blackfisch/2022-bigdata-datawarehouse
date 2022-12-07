@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestWrapper": {
+      "commandName": "Project",
+      "commandLineArgs": "E:\\Git\\2022-bigdata-datawarehouse"
+    }
+  }
+}

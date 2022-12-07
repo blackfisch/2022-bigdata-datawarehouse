@@ -9,17 +9,16 @@ install_needed_package <- function() {
 }
 
 extrem_wert_analyse <- function() {
-  
-   hosp_data <- filter(
+  hosp_data <- filter(
     hosp_data,
     grepl("00\\+", hosp_data$Altersgruppe)
   )
-  
+
   print(max(hosp_data$X7T_Hospitalisierung_Faelle))
   print(min(hosp_data$X7T_Hospitalisierung_Faelle))
 
 
-  plot(as.Date(hosp_data$Datum),hosp_data$X7T_Hospitalisierung_Faelle, type = "l", lty = 1, lwd = 1)
+  plot(as.Date(hosp_data$Datum), hosp_data$X7T_Hospitalisierung_Faelle, type = "l", lty = 1, lwd = 1)
 
 
   csv_only_number_inzidenz <- data.frame(
@@ -28,12 +27,12 @@ extrem_wert_analyse <- function() {
     inzidenz_df$Inzidenz_7.Tage
   )
 
-   xyz2 <<- filter(
+  xyz2 <<- filter(
     csv_only_number_inzidenz,
     grepl("00\\+", csv_only_number_inzidenz$inzidenz_df.Altersgruppe)
   )
 
-  plot(as.Date(xyz2$inzidenz_df.Meldedatum),xyz2$inzidenz_df.Inzidenz_7.Tage, type = "l", lty = 1, lwd = 1)
+  plot(as.Date(xyz2$inzidenz_df.Meldedatum), xyz2$inzidenz_df.Inzidenz_7.Tage, type = "l", lty = 1, lwd = 1)
 }
 
 plote_korrelationsmatrix <- function() {
@@ -56,7 +55,7 @@ plote_korrelationsmatrix <- function() {
     hosp_data$X7T_Hospitalisierung_Inzidenz,
     hosp_data$Bundesland_Id
   )
-  
+
   xyz <- filter(
     csv_only_number,
     grepl("00\\+", csv_only_number$hosp_data.Altersgruppe)
@@ -86,6 +85,5 @@ plote_korrelationsmatrix <- function() {
 }
 
 
-system.time(extrem_wert_analyse())
-system.time(plote_korrelationsmatrix())
-
+extrem_wert_analyse()
+plote_korrelationsmatrix()

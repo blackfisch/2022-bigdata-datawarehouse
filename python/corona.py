@@ -7,7 +7,6 @@ import timeit
 from statistics import mean
 
 
-hosp = """
 def max_hospitalized():
     '''min-max analysis and visualization of hospitalization data'''
 
@@ -42,9 +41,8 @@ def max_hospitalized():
     axes.set_ylabel('Inzidenz (7 Tage)')
     axes.set_title('Inzidenz (7 Tage) in Deutschland')
     axes.tick_params(axis='x', labelrotation=45)
-"""
 
-correlation = """
+
 def correlation_matrix():
     '''correlation matrix for all data'''
     impf_data = impf_df[['Impfdatum', 'Anzahl']]
@@ -62,7 +60,7 @@ def correlation_matrix():
     result = pd.concat([impf_data, hosp_data], axis=1).round(2)
     result = result[result.columns[::-1]]
     result = result.iloc[::-1]
-    #print(result.corr())
+    # print(result.corr())
 
     _, axes = plt.subplots()
     im = axes.matshow(result.corr())
@@ -73,7 +71,7 @@ def correlation_matrix():
         ['number']).columns)
 
     cb = plt.colorbar(im, ax=axes)
-"""
+
 
 if __name__ == "__main__":
     hosp_df = pd.read_csv(definitions.FILE_HOSPITALISIERUNG)
@@ -82,9 +80,7 @@ if __name__ == "__main__":
 
     REPEATS = 25
 
-    print(f'Mean Execution time over {REPEATS} runs:')
-    print('Exec Time HOSP ', mean(timeit.repeat(hosp, repeat=REPEATS)), ' seconds')
-    print('Exec Time CORR ', mean(timeit.repeat(
-        correlation, repeat=REPEATS)), ' seconds')
+    max_hospitalized()
+    correlation_matrix()
 
     # plt.show()
