@@ -4,13 +4,19 @@ using System.Diagnostics;
 using System.Drawing.Text;
 using System.Drawing.Printing;
 
+Console.Write("Number of Test-Runs: ");
+int RUNS = int.Parse(Console.ReadLine()!);
 
-int RUNS = 1;
+static string AskWorkPath()
+{
+    Console.Write("Working Directory: ");
+    return Console.ReadLine()!;
+}
 
-string workPath = args.Length < 1 ? Directory.GetCurrentDirectory() : args[0];
+string workPath = args.Length < 1 ? AskWorkPath() : args[0];
 Directory.SetCurrentDirectory(workPath);
 
-// Start Processes
+
 string[] py_exec = { 
     "python", 
     Path.Combine(workPath, "python", "corona.py") 
@@ -39,13 +45,6 @@ foreach (string[] arr in processes)
         }
     };
 
-
-    /*
-    PerformanceCounter cnt = new PerformanceCounter("Process", "% Processor Time", proc.ProcessName, true);
-
-    Console.WriteLine("------------------------------");
-    Console.WriteLine(arr[0] + ":  " + cnt.RawValue / 1000000.0 + " ms");
-    */
     Console.WriteLine("-----------" + arr[0] + "-----------");
 
     List<double> cpuUsageHistory = new();
@@ -63,29 +62,26 @@ foreach (string[] arr in processes)
         while (!Console.KeyAvailable)
         {
             if (proc.HasExited)
-            {
+            
                 break;
+
+            if (lastTime == new DateTime())
+            {
+                lastTime = DateTime.Now;
+                lastTotalProcessorTime = proc.TotalProcessorTime;
             }
             else
             {
-                if (lastTime == new DateTime())
-                {
-                    lastTime = DateTime.Now;
-                    lastTotalProcessorTime = proc.TotalProcessorTime;
-                }
-                else
-                {
-                    curTime = DateTime.Now;
-                    curTotalProcessorTime = proc.TotalProcessorTime;
+                curTime = DateTime.Now;
+                curTotalProcessorTime = proc.TotalProcessorTime;
 
-                    double CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
-                    //Console.WriteLine("{0} CPU: {1:0.0}%", processName, CPUUsage * 100);
-                    cpuUsageHistory.Add(CPUUsage);
+                double CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
+                cpuUsageHistory.Add(CPUUsage);
 
-                    lastTime = curTime;
-                    lastTotalProcessorTime = curTotalProcessorTime;
-                }
+                lastTime = curTime;
+                lastTotalProcessorTime = curTotalProcessorTime;
             }
+
             lastMemUse = cnt.RawValue;
             Thread.Sleep(1);
         }
@@ -98,11 +94,11 @@ foreach (string[] arr in processes)
     memUsages.Add(processMemHistory.Average());
     runTimes.Add(processTimeHistory.Average());
 }
-Console.WriteLine("------------------------------");
-Console.WriteLine("\n\n\n");
-Console.WriteLine("-----------RESULTS-------------");
-Console.WriteLine("Average Resource Usage over " + RUNS + "runs\n\n");
+Console.WriteLine("------------------------------\n\n\n");
+Console.WriteLine("-----------RESULTS------------");
+Console.WriteLine("Average Resource Usage over " + RUNS + " runs\n\n");
 Console.WriteLine("Python: \n" + cpuUsages[0] * 100 + " %\nCPU Times: " + runTimes[0] + " ms\nPeak Memory: " + memUsages[0] + " MB\n\n");
-Console.WriteLine("R: \n" + cpuUsages[1] * 100 + " %\nCPU Times: " + runTimes[1] + " ms\nPeak Memory: " + memUsages[1] + " MB\n\n");
-Console.WriteLine();
-Console.WriteLine("------------------------------");
+Console.WriteLine("R: \n" + cpuUsages[1] * 100 + " %\nCPU Times: " + runTimes[1] + " ms\nPeak Memory: " + memUsages[1] + " MB");
+Console.WriteLine("------------------------------\n");
+Console.Write("Press any key to exit...");
+Console.ReadLine();
